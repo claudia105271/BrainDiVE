@@ -1,15 +1,14 @@
-import torch
-torch.backends.cudnn.benchmark = True
-
-from encoder_dataloader import neural_loader
 import os
 import torch.distributed as dist
-import model_vit
-from time import time
-from encoder_options import Options
-torch.backends.cudnn.benchmark=True
+import torch
 import h5py
 import numpy as np
+from time import time
+
+from encoder_dataloader import neural_loader
+import encoder_model_vit as model_vit
+from encoder_options import Options
+torch.backends.cudnn.benchmark=True
 
 def test_net(rank, other_args):
     output_device = rank
