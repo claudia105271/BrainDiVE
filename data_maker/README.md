@@ -1,25 +1,42 @@
-# Data preparation
+# Data Preparation
 
-There are a couple of steps we take to prepare useful data.
+This stage preprocesses Natural Scenes Dataset (NSD) data for downstream modeling.
 
-|-Z_score.ipynb
+## Overview
 
-This file contains code needed to z-score the voxel-wise responses within sessions and to average it across repeats of the same images. It also contains code needed to resize the COCO images using the crops used by the NSD experiment.
+1. **Normalize neural responses:** Z-score voxel responses per session and average repeated presentations of the same image.
+2. **Extract cortical responses:** Remove non-cortical voxels and associate responses with COCO image IDs.
+3. **Prepare images:** Retrieve, crop, and resize the corresponding COCO images.
 
-|-data_reorder.py
+## Scripts and Outputs
 
-The output of Z_score.ipynb is not associated with a COCO id, and is very large as it contains the full brain volume. This file will extract out just the cortex data, and associate the COCO ids with the cortex data.
+### `Z_score.ipynb`
 
-|-rank_by_HCP.ipynb
+Normalizes neural responses and averages repeated presentations.
 
-It turns out, the full cortical surface is still a lot of information. We obviously only want regions that respond consistently to visual stimuli. This file will take the noise ceiling information, take the Human Connectome Project
-(HCP) region masks, and for each subject, rank how consistently each region responds to visual stimuli. We average the ranks across all eight subjects to get the top regions.
+**Outputs:**
+- `image_data_partitions.npy` — Training, holdout, and shared validation image partitions.
+- `pre_processing_results/NSD_zscored/subj_{}.npy` — Z-scored neural responses.
+- `pre_processing_results/NSD_zscored/subj_{}_order.npy` — Image ordering information.
 
+### `data_reorder.py`
 
-Run the files in the following order:
-1. Z_score.ipynb. This will take in "raw" NSD data, and output z-scored 1D beta values, order of the neural data, and resized images
-2. data_reorder.py. This will use the order and associate each beta value with an image name. It will also take the volume, and just preserve the cortical voxels.
-3. rank_by_HCP.ipynb. This ranks the HCP regions by average noise ceiling's rank across eight subjects. Uses to reduce the information modeled. This is a simple filter. 
+Extracts cortical voxels and associates neural responses with COCO image IDs.
 
+**Output:**
+- `pre_processing_results/NSD_zscored/cortex_subj_{}.npy` — Cortical neural responses for each subject.
 
-Note, that currently the code is written using hard coded paths, please modify them as needed. Or you can use the data that we have prepared for you, please download the data from the torrent provided on the main page.
+### `retrieve_NSD_images.py`
+
+Retrieves and preprocesses COCO images corresponding to NSD stimuli.
+
+**Output:**
+- `pre_processing_results/image_data.h5py` — Processed images indexed by COCO image ID.
+
+## Changes to the Upstream Code
+
+The code was adapted to run on a machine with 32 GB of RAM:
+
+- **Reduced memory usage:** Used `float32` instead of `float64`.
+- **Processed data session by session:** Normalized and averaged responses incrementally to avoid loading the full dataset, which would require approximately 76 GB of memory.
+- **Separated image preparation:** Moved image retrieval and preprocessing into a dedicated script.
