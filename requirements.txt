@@ -1,5 +1,6 @@
 # Ubuntu 20.04 — Python 3.8.10 — ARM64 / Jetson AGX Xavier
 
+awscli==1.38.38 
 numpy==1.21.5
 h5py==3.8.0
 diffusers==0.30.3
@@ -12,4 +13,6 @@ timm==0.9.16
 pandas==2.0.3
 matplotlib==3.7.5
 scipy==1.10.1
+imageio==2.35.1
+scikit-image==0.21.0
 #pycortex==1.2.11

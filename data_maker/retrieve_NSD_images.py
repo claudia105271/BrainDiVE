@@ -16,15 +16,18 @@ csv_obj = pd.read_csv(
     os.path.join(nsd_root, "nsddata", "experiments", "nsd", "nsd_stim_info_merged.csv")
 )
 
-def coco_crop(img,cropbox_in):
+
+def coco_crop(img, cropbox_in):
     if type(cropbox_in) is str:
         cropbox = eval(cropbox_in)
     else:
         cropbox = cropbox_in
-    top = int(img.shape[0]*cropbox[0])
-    bottom = int(img.shape[0]*(1-cropbox[1]))
-    left = int(img.shape[1]*cropbox[2])
-    right = int(img.shape[1]*(1-cropbox[3])
+
+    top = int(img.shape[0] * cropbox[0])
+    bottom = int(img.shape[0] * (1 - cropbox[1]))
+    left = int(img.shape[1] * cropbox[2])
+    right = int(img.shape[1] * (1 - cropbox[3]))
+
     return img[top:bottom, left:right]
 
 def get_cocopath(coco_id_):

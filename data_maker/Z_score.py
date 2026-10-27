@@ -20,6 +20,7 @@ nsd_root = '/mnt/lexar/NSD/';
 stim_root = '/mnt/lexar/NSD/nsddata_stimuli/stimuli/nsd';
 beta_root = '/mnt/lexar/NSD/nsddata_betas/ppdata/';
 partition_root = 'image_data_partitions.npy';
+output_dir = 'pre_processing_results/NSD_zscored';
 
 trials_per_sess = 750
 sess_per_subj = 40
@@ -403,7 +404,6 @@ if __name__ == "__main__":
         print(f"Number of evaluation images: {len(eval_indices)}")
         print(f"Evaluation indices:\n{eval_indices}")
 
-        output_dir = "pre_processing_results/NSD_zscored"
         os.makedirs(output_dir, exist_ok=True)
         np.save(os.path.join(output_dir, "subj_{}.npy".format(subj)), outs[0])
         np.save(os.path.join(output_dir, "subj_{}_order.npy".format(subj)), outs[1])

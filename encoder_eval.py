@@ -61,8 +61,12 @@ def test_net(rank, other_args):
     criterion = torch.nn.MSELoss()
     losses = 0.0
     offset = 0.0
-    print("Saving to {}".format("/ocean/projects/soc220007p/aluo/DiffusionInception/results/eval/{}.h5py".format(cur_args.exp_name)))
-    file = h5py.File("/ocean/projects/soc220007p/aluo/DiffusionInception/results/eval/{}.h5py".format(cur_args.exp_name), 'w')
+    output_dir = os.path.join(os.getcwd(), "results", "eval")
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "{}.h5py".format(cur_args.exp_name))
+    print("Saving to {}".format(output_path))
+    file = h5py.File(output_path, "w")
+
     with torch.no_grad():
         print("Total {} for testing".format(len(dataset.testing_set)))
         for data_stuff_idx in range(len(dataset.testing_set)):
