@@ -18,4 +18,4 @@ This stage preprocesses Natural Scenes Dataset (NSD) data for downstream modelin
 | `data_reorder.py` | Extracts cortical responses and associates them with COCO image IDs. | `cortex_subj_{}.npy` |
 | `retrieve_NSD_images.py` | Retrieves, crops, and resizes COCO images. | `image_data.h5py` |
 | `rank_by_HCP.py` | Ranks HCP-MMP1 ROIs by mean ncsnr across NSD subjects. | `best_HCP.npy` |
-| `create_HCP_masks.py` | Creates subject-specific functional volume masks and 1D masks with voxels from the top 45 HCP ROIs and other ROI masks. | `volume_to_functional.pkl`<br>``double_mask_HCP.pkl` |
+| `create_HCP_masks.py` | Creates subject-specific functional volume masks and 1D masks with voxels from the top 45 HCP ROIs and other ROI masks. | `volume_to_functional.pkl`<br> `double_mask_HCP.pkl` |
