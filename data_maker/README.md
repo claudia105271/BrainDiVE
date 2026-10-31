@@ -14,15 +14,8 @@ This stage preprocesses Natural Scenes Dataset (NSD) data for downstream modelin
 
 | Script | Description | Outputs |
 |---|---|---|
-| `Z_score.ipynb` | Z-scores neural responses and averages repeated image presentations. | `image_data_partitions.npy`<br>`pre_processing_results/NSD_zscored/subj_{}.npy`<br>`pre_processing_results/NSD_zscored/subj_{}_order.npy` |
-| `data_reorder.py` | Extracts cortical responses and associates them with COCO image IDs. | `pre_processing_results/NSD_zscored/cortex_subj_{}.npy` |
-| `retrieve_NSD_images.py` | Retrieves, crops, and resizes COCO images. | `pre_processing_results/image_data.h5py` |
-| `rank_by_HCP.py` | Ranks HCP-MMP1 ROIs by mean ncsnr across NSD subjects. | `pre_processing_results/best_HCP.npy` |
-| `create_HCP_masks.py` | Creates subject-specific functional volume masks and 1D masks selecting voxels from the top 45 HCP ROIs. | `pre_processing_results/volume_to_functional.pkl`<br>``pre_processing_results/double_mask_HCP.pkl` |
-
-## Changes to the Upstream Code
-
-- **Code cleanup:** Remove deadcode, add top level paths, convert notebooks to py.
-- **Added HCP mask generation:**  Created subject-specific functional volume masks and 1D masks selecting voxels from the top 45 HCP ROIs.
-- **Update Z_score to decrease RAM usage:** Use `float32` instead of `float64`. Normalize and averaged responses incrementally to avoid loading the full dataset.
-- **Separate image preparation:** Moved image retrieval and preprocessing into a dedicated script.
+| `Z_score.ipynb` | Z-scores neural responses and averages repeated image presentations. | `image_data_partitions.npy`<br>`subj_{}.npy`<br>`subj_{}_order.npy` |
+| `data_reorder.py` | Extracts cortical responses and associates them with COCO image IDs. | `cortex_subj_{}.npy` |
+| `retrieve_NSD_images.py` | Retrieves, crops, and resizes COCO images. | `image_data.h5py` |
+| `rank_by_HCP.py` | Ranks HCP-MMP1 ROIs by mean ncsnr across NSD subjects. | `best_HCP.npy` |
+| `create_HCP_masks.py` | Creates subject-specific functional volume masks and 1D masks with voxels from the top 45 HCP ROIs and other ROI masks. | `volume_to_functional.pkl`<br>``double_mask_HCP.pkl` |

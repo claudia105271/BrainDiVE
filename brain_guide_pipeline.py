@@ -1,34 +1,36 @@
+import numpy as np
 import inspect
 import math
-from typing import Any, Callable, Dict, List, Optional, Union
-
-import torch
-import torch.nn.functional as F
-from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
-
-from diffusers.models import AutoencoderKL, UNet2DConditionModel
+import random
 import matplotlib.pyplot as plt
 import gc
+import torch
+import torch.nn.functional as F
+from torchvision import transforms
+from typing import Any, Callable, Dict, List, Optional, Union
+
+from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
+from diffusers.models import AutoencoderKL, UNet2DConditionModel
 from diffusers.schedulers import KarrasDiffusionSchedulers
+from diffusers import (
+    DiffusionPipeline,
+    DPMSolverMultistepScheduler,
+    StableDiffusionPipeline,
+    LMSDiscreteScheduler,
+    PNDMScheduler,
+    DDIMScheduler,
+)
+
 from diffusers.utils import (
-    deprecate,
     is_accelerate_available,
     is_accelerate_version,
     logging,
-    randn_tensor,
     replace_example_docstring,
 )
-import numpy as np
-from diffusers.pipeline_utils import DiffusionPipeline
+
+from diffusers.utils.torch_utils import randn_tensor
 from diffusers.pipelines.stable_diffusion import StableDiffusionPipelineOutput
 from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
-from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler, StableDiffusionPipeline
-from torchvision import transforms
-from diffusers import LMSDiscreteScheduler, PNDMScheduler, DDIMScheduler, DPMSolverMultistepScheduler
-
-from diffusers.models import AutoencoderKL, UNet2DConditionModel
-
-import random
 
 
 # def shuffle_shift(input_image, extent=2, seed=0):
@@ -828,7 +830,7 @@ class mypipelineSAG(DiffusionPipeline):
         degraded_latents = degraded_latents * attn_mask + original_latents * (1 - attn_mask)
 
         # Noise it again to match the noise level
-        degraded_latents = self.scheduler.add_noise(degraded_latents, noise=eps, timesteps=t)
+        degraded_latents = self.scheduler.add_noise(degraded_latents, noise=eps, timesteps=t.reshape(1))
 
         return degraded_latents
 
