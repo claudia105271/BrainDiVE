@@ -10,7 +10,7 @@ def load_from_nii(nii_file):
 
 nsd_root = '/mnt/lexar/NSD/';
 roi_root = '{}/nsddata/ppdata/subj0{}/func1pt8mm/roi/{}';
-output_dir = "pre_processing_results/NSD_zscored"
+output_dir = 'pre_processing_results/NSD_zscored';
 subjects = [1] # [1,2,3,4,5,6,7,8]
 
 for s in subjects:

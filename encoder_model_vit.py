@@ -406,79 +406,79 @@ class downproject_CLIP_split(torch.nn.Module):
         return torch.cat(results, dim=0)
 
 
-# class downproject_CLIP_split_linear(torch.nn.Module):
-#     def __init__(self, num_early_output=None, num_higher_output=None):
-#         super().__init__()
-#
-#         ### CLIP conv layers to early visual ###
-#         self.reduce_1 = torch.nn.Linear(768, 160)
-#         self.reduce_2 = torch.nn.Linear(768, 160)
-#         self.fuse1 = torch.nn.Linear(160*14*14, 1024)
-#
-#         self.reduce_3 = torch.nn.Linear(768, 160)
-#         self.reduce_4 = torch.nn.Linear(768, 160)
-#         self.fuse2 = torch.nn.Linear(160*14*14, 1024)
-#
-#         self.squeeze = torch.nn.Sequential(torch.nn.Linear(2048, 128), torch.nn.GELU(approximate="tanh"), torch.nn.Linear(128, 2048), torch.nn.Sigmoid())
-#         # Identified by Aria in her "Incorporating natural language into vision models improves prediction and understanding of higher visual cortex" paper
-#         ### End CLIP conv layers to early visual ###
-#
-#         ### CLIP later layers to non-early visual ###
-#         # self.reduce_5 = torch.nn.Linear(768, 160)
-#         # self.reduce_6 = torch.nn.Linear(768, 160)
-#         # self.fuse3 = torch.nn.Linear(160*14*14, 1024)
-#         # self.fuse3.weight.data = self.fuse3.weight.data * 0.05
-#         # self.fuse3.bias.data = self.fuse3.bias.data * 0.05
-#         ### End CLIP later layers to non-early visual ###
-#
-#         keys = sorted(num_early_output.keys())
-#         for k_i in keys:
-#             self.add_module("final_{}_early".format(k_i), torch.nn.Linear(2048, num_early_output[k_i]))
-#             getattr(self, "final_{}_early".format(k_i)).weight.data = getattr(self, "final_{}_early".format(k_i)).weight.data*0.5
-#             # torch.nn.init.kaiming_uniform_(getattr(self, "final_{}_early".format(k_i)).weight.data, a=math.sqrt(5), mode='fan_out')
-#             self.add_module("final_{}_higher".format(k_i), torch.nn.Linear(512, num_higher_output[k_i]))
-#             getattr(self, "final_{}_higher".format(k_i)).weight.data = getattr(self, "final_{}_higher".format(k_i)).weight.data*0.5
-#
-#         # non linearity helps
-#         self.act1 = torch.nn.GELU(approximate="tanh")
-#         self.act2 = torch.nn.GELU(approximate="tanh")
-#     def forward(self, first_layer_in, second_layer_in, last_layer_in, key_order):
-#         drop_p = 0.15
-#         # in shape torch.Size([2, 196, 768])
-#         # permute 1 = torch.Size([2, 768, 196])
-#         # permute 2 = torch.Size([2, 768, 196])
-#
-#         first_layer = torch.nn.functional.dropout1d(torch.permute(first_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
-#         second_layer = torch.nn.functional.dropout1d(torch.permute(second_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
-#         flipped_first_ = self.fuse1(torch.flatten(self.act1(self.reduce_1(first_layer)) + self.reduce_2(first_layer), start_dim=1))
-#         flipped_second_ = self.fuse2(torch.flatten(self.act2(self.reduce_3(second_layer)) + self.reduce_4(second_layer), start_dim=1))
-#         early_out = torch.nn.functional.dropout(torch.cat((flipped_first_, flipped_second_), dim=1), p=drop_p, training=self.training)
-#         early_final = torch.nn.functional.dropout(early_out * (1.0 + self.squeeze(early_out)), p=drop_p, training=self.training)
-#
-#         last_layer_in_norm = torch.nn.functional.normalize(last_layer_in, dim=1)
-#         # higher_out = self.reduce_5(last_layer_in)
-#         key_i = key_order[0]
-#         return torch.cat((getattr(self, "final_{}_early".format(str(key_i)))(early_final), getattr(self, "final_{}_higher".format(str(key_i)))(last_layer_in_norm)), dim=1)
-#
-#     def forward_higher(self, first_layer_in, second_layer_in, last_layer_in, key_order):
-#         key_i = key_order[0]
-#         last_layer_in_norm = torch.nn.functional.normalize(last_layer_in, dim=1)
-#         return getattr(self, "final_{}_higher".format(str(key_i)))(last_layer_in_norm)
-#
-#     def forward_early(self, first_layer_in, second_layer_in, last_layer_in, key_order):
-#         drop_p = 0.15
-#         assert not self.training
-#         first_layer = torch.nn.functional.dropout1d(torch.permute(first_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
-#         second_layer = torch.nn.functional.dropout1d(torch.permute(second_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
-#         flipped_first_ = self.fuse1(torch.flatten(self.act1(self.reduce_1(first_layer)) + self.reduce_2(first_layer), start_dim=1))
-#         flipped_second_ = self.fuse2(torch.flatten(self.act2(self.reduce_3(second_layer)) + self.reduce_4(second_layer), start_dim=1))
-#         early_out = torch.nn.functional.dropout(torch.cat((flipped_first_, flipped_second_), dim=1), p=drop_p, training=self.training)
-#         early_final = torch.nn.functional.dropout(early_out * (1.0 + self.squeeze(early_out)), p=drop_p, training=self.training)
-#         key_i = key_order[0]
-#         return getattr(self, "final_{}_early".format(str(key_i)))(early_final)
-#
+class downproject_CLIP_split_linear(torch.nn.Module):
+     def __init__(self, num_early_output=None, num_higher_output=None):
+         super().__init__()
+
+         ### CLIP conv layers to early visual ###
+         self.reduce_1 = torch.nn.Linear(768, 160)
+         self.reduce_2 = torch.nn.Linear(768, 160)
+         self.fuse1 = torch.nn.Linear(160*14*14, 1024)
+
+         self.reduce_3 = torch.nn.Linear(768, 160)
+         self.reduce_4 = torch.nn.Linear(768, 160)
+         self.fuse2 = torch.nn.Linear(160*14*14, 1024)
+
+         self.squeeze = torch.nn.Sequential(torch.nn.Linear(2048, 128), torch.nn.GELU(approximate="tanh"), torch.nn.Linear(128, 2048), torch.nn.Sigmoid())
+         # Identified by Aria in her "Incorporating natural language into vision models improves prediction and understanding of higher visual cortex" paper
+         ### End CLIP conv layers to early visual ###
+
+         ### CLIP later layers to non-early visual ###
+         # self.reduce_5 = torch.nn.Linear(768, 160)
+         # self.reduce_6 = torch.nn.Linear(768, 160)
+         # self.fuse3 = torch.nn.Linear(160*14*14, 1024)
+         # self.fuse3.weight.data = self.fuse3.weight.data * 0.05
+         # self.fuse3.bias.data = self.fuse3.bias.data * 0.05
+         ### End CLIP later layers to non-early visual ###
+
+         keys = sorted(num_early_output.keys())
+         for k_i in keys:
+             self.add_module("final_{}_early".format(k_i), torch.nn.Linear(2048, num_early_output[k_i]))
+             getattr(self, "final_{}_early".format(k_i)).weight.data = getattr(self, "final_{}_early".format(k_i)).weight.data*0.5
+             # torch.nn.init.kaiming_uniform_(getattr(self, "final_{}_early".format(k_i)).weight.data, a=math.sqrt(5), mode='fan_out')
+             self.add_module("final_{}_higher".format(k_i), torch.nn.Linear(512, num_higher_output[k_i]))
+             getattr(self, "final_{}_higher".format(k_i)).weight.data = getattr(self, "final_{}_higher".format(k_i)).weight.data*0.5
+
+         # non linearity helps
+         self.act1 = torch.nn.GELU(approximate="tanh")
+         self.act2 = torch.nn.GELU(approximate="tanh")
+     def forward(self, first_layer_in, second_layer_in, last_layer_in, key_order):
+         drop_p = 0.15
+         # in shape torch.Size([2, 196, 768])
+         # permute 1 = torch.Size([2, 768, 196])
+         # permute 2 = torch.Size([2, 768, 196])
+
+         first_layer = torch.nn.functional.dropout1d(torch.permute(first_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
+         second_layer = torch.nn.functional.dropout1d(torch.permute(second_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
+         flipped_first_ = self.fuse1(torch.flatten(self.act1(self.reduce_1(first_layer)) + self.reduce_2(first_layer), start_dim=1))
+         flipped_second_ = self.fuse2(torch.flatten(self.act2(self.reduce_3(second_layer)) + self.reduce_4(second_layer), start_dim=1))
+         early_out = torch.nn.functional.dropout(torch.cat((flipped_first_, flipped_second_), dim=1), p=drop_p, training=self.training)
+         early_final = torch.nn.functional.dropout(early_out * (1.0 + self.squeeze(early_out)), p=drop_p, training=self.training)
+
+         last_layer_in_norm = torch.nn.functional.normalize(last_layer_in, dim=1)
+         # higher_out = self.reduce_5(last_layer_in)
+         key_i = key_order[0]
+         return torch.cat((getattr(self, "final_{}_early".format(str(key_i)))(early_final), getattr(self, "final_{}_higher".format(str(key_i)))(last_layer_in_norm)), dim=1)
+
+     def forward_higher(self, first_layer_in, second_layer_in, last_layer_in, key_order):
+         key_i = key_order[0]
+         last_layer_in_norm = torch.nn.functional.normalize(last_layer_in, dim=1)
+         return getattr(self, "final_{}_higher".format(str(key_i)))(last_layer_in_norm)
+
+     def forward_early(self, first_layer_in, second_layer_in, last_layer_in, key_order):
+         drop_p = 0.15
+         assert not self.training
+         first_layer = torch.nn.functional.dropout1d(torch.permute(first_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
+         second_layer = torch.nn.functional.dropout1d(torch.permute(second_layer_in, (0,2,1)), p=drop_p,training=self.training).permute(0,2,1)
+         flipped_first_ = self.fuse1(torch.flatten(self.act1(self.reduce_1(first_layer)) + self.reduce_2(first_layer), start_dim=1))
+         flipped_second_ = self.fuse2(torch.flatten(self.act2(self.reduce_3(second_layer)) + self.reduce_4(second_layer), start_dim=1))
+         early_out = torch.nn.functional.dropout(torch.cat((flipped_first_, flipped_second_), dim=1), p=drop_p, training=self.training)
+         early_final = torch.nn.functional.dropout(early_out * (1.0 + self.squeeze(early_out)), p=drop_p, training=self.training)
+         key_i = key_order[0]
+         return getattr(self, "final_{}_early".format(str(key_i)))(early_final)
 
 
+"""
 class downproject_CLIP_split_linear(torch.nn.Module):
     def __init__(self, num_early_output=None, num_higher_output=None):
         super().__init__()
@@ -522,3 +522,4 @@ class downproject_CLIP_split_linear(torch.nn.Module):
         early_final = torch.nn.functional.dropout(early_out * (1.0 + self.squeeze(early_out)), p=drop_p, training=self.training)
         key_i = key_order[0]
         return getattr(self, "final_{}_early".format(str(key_i)))(early_final)
+        """

@@ -83,7 +83,7 @@ class neural_loader(torch.utils.data.Dataset):
 
         ###### Extract testing set
         if not os.path.exists("all_keys.pkl"):
-            for subject in [1,2,3,4,5,6,7,8]:
+            for subject in [1]:
                 str_subject = str(subject)
                 neural_data = h5py.File(self.neural_activity_path.format(str_subject), 'r')
                 all_keys[str_subject] = [i for i in list(neural_data.keys()) if (not "mask" == i)]
