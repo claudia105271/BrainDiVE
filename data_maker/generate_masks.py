@@ -47,10 +47,10 @@ volume_functional_masks = [None] * max(options.subjects)
 double_masks = [None] * max(options.subjects)
 for subject in options.subjects:
     print(f"\nProcessing subject {subject}")
-
-    food_path = os.path.join(output_dir, f'food_s{subject}.npy')
+    food_path = os.path.join(os.getcwd(), "inputs", f"food_s{subject}.npy")
     if not os.path.isfile(food_path):
-        raise FileNotFoundError(f"Food mask not found: {food_path}")
+      raise FileNotFoundError(f"Food mask not found: {food_path}")
+    
     roi_dir = options.roi_root.format(subject)
     neural_path = options.neural_activity_path.format(subject)
     roi_masks = [

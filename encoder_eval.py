@@ -27,11 +27,11 @@ def test_net(rank, other_args):
 
     loaded_weights = False
     if 1:
-        if not os.path.isdir(other_args.exp_dir):
+        if not os.path.isdir(other_args.checkpoint_path):
             print("Missing save dir, exiting")
             return 1
         else:
-            current_files = sorted(os.listdir(other_args.exp_dir))
+            current_files = sorted(os.listdir(other_args.checkpoint_path))
             if len(current_files)>0:
                 latest = current_files[-1]
                 start_epoch = int(latest.split(".")[0]) + 1
@@ -39,7 +39,7 @@ def test_net(rank, other_args):
                     print("Identified checkpoint {} with new starting epoch {}".format(latest, start_epoch))
 
                 map_location = 'cpu'
-                weight_loc = os.path.join(other_args.exp_dir, latest)
+                weight_loc = os.path.join(other_args.checkpoint_path, latest)
                 weights = torch.load(weight_loc, map_location=map_location)
                 if rank == 0:
                     print("Checkpoint loaded {}".format(weight_loc))
@@ -61,7 +61,7 @@ def test_net(rank, other_args):
     criterion = torch.nn.MSELoss()
     losses = 0.0
     offset = 0.0
-    output_dir = os.path.join(other_args.save_loc, "eval")
+    output_dir = os.path.join(other_args.output_dir, "eval")
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "{}.h5py".format(other_args.exp_name))
     print("Saving to {}".format(output_path))
@@ -88,20 +88,13 @@ def test_net(rank, other_args):
 
 if __name__ == '__main__':
     cur_args = Options().parse()
-    cur_args.exp_name = "subject_{}_neurips_split_VIT_last_fully_linear"
-    exp_name = cur_args.exp_name
-    if len(cur_args.subject_id[0])>1:
-        cur_args.subject_id = sorted([str(int(sbjid)) for sbjid in cur_args.subject_id[0].split(",")])
+    cur_args.subject_id = sorted(
+        [str(int(subject)) for subject in cur_args.subject_id]
+    )
+    exp_name = "subject_{}_neurips_split_VIT_last_fully_linear"
+    cur_args.exp_name = exp_name.format("-".join(cur_args.subject_id))
 
-    exp_name_filled = exp_name.format("-".join(cur_args.subject_id))
-    cur_args.exp_name = exp_name_filled
-    if not os.path.isdir(cur_args.save_loc):
-        print("Save directory {} does not exist, creating...".format(cur_args.save_loc))
-        os.mkdir(cur_args.save_loc)
-    exp_dir = os.path.join(cur_args.save_loc, exp_name_filled)
-    cur_args.exp_dir = exp_dir
-    print("Experiment directory is {}".format(exp_dir))
-    if not os.path.isdir(exp_dir):
-        os.mkdir(exp_dir)
+    cur_args.checkpoint_path = cur_args.checkpoint_path.format(cur_args.subject_id[0], cur_args.subject_id[0])
+    print("Loading checkpoint from {}".format(cur_args.checkpoint_path)) 
     world_size = cur_args.gpus
     test_net(0,cur_args)

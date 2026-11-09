@@ -11,7 +11,7 @@ options = Options().parse()
 
 nsd_root = options.nsd_root
 beta_root = options.beta_root
-partition_root = os.path.join(options.preprocessing_dir, 'image_data_partitions.npy')
+partition_root = os.path.join(os.getcwd(), "inputs", 'image_data_partitions.npy')
 output_dir = options.zscored_dir
 
 trials_per_sess = 750

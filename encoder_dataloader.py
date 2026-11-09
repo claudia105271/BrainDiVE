@@ -71,8 +71,8 @@ class neural_loader(torch.utils.data.Dataset):
         self.image_data = None
         all_keys = {}
 
-        os.makedirs(arg_stuff.save_loc, exist_ok=True)
-        keys_path = os.path.join(arg_stuff.save_loc, 'all_keys.pkl')
+        os.makedirs(arg_stuff.output_dir, exist_ok=True)
+        keys_path = os.path.join(arg_stuff.output_dir, 'all_keys.pkl')
         ###### Extract testing set
         if not os.path.exists(keys_path):
             for subject in self.subject_id:
