@@ -5,7 +5,7 @@ from options import Options, load_from_nii
 options = Options().parse()
 beta_root = options.beta_root
 output_dir = options.preprocessing_dir
-subjects = options.subjects
+subjects = [1, 2, 3, 4, 5, 6, 7, 8]
 
 all_subject_rois = dict()
 
